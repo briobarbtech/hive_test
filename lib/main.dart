@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:hive_tutorial/person.dart';
+import 'package:hive_tutorial/character.dart';
+import 'package:hive_tutorial/character_hive.dart';
+import 'package:hive_tutorial/starwars_state_hive.dart';
+import 'package:hive_tutorial/character_model.dart';
 
 late Box boxHive;
 Future<void> main() async {
   // Inicializo el Hive
   await Hive.initFlutter();
   // Open a box
-  boxHive = await Hive.openBox('starwarsStates');
-  Hive.registerAdapter(PersonAdapter());
-  boxHive.put('Person', Person(name: "Brian", age: 23, friends: []));
-  boxHive.get('Person');
+  Hive.registerAdapter(StarWarsStateHiveAdapter());
+  boxHive = await Hive.openBox('starwars');
   runApp(const MyApp());
 }
 
@@ -25,53 +26,48 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    CharacterModel listOfCharacters = CharacterModel(
+        birthYear: 'birthYear',
+        eyeColor: 'eyeColor',
+        gender: 'gender',
+        hairColor: 'hairColor',
+        skinColor: 'skinColor',
+        height: 'height',
+        homeworld: 'homeworld',
+        mass: 'mass',
+        name: 'Brian');
+
+    boxHive.put(
+        'character1',
+        StarWarsStateHive(previous: 'previous', next: 'next', listCharacter: [
+          listOfCharacters.toMap(),
+          listOfCharacters.toMap(),
+          listOfCharacters.toMap(),
+          listOfCharacters.toMap(),
+          listOfCharacters.toMap()
+        ]));
+    StarWarsStateHive result = boxHive.get('character1');
+    List<CharacterModel> character =
+        result.listCharacter.map((e) => CharacterModel.fromJson(e)).toList();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        appBar: AppBar(
+          title: const Text('Testing Hive'),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
+        body: ListView.builder(
+          itemBuilder: (context, index) =>
+              ListTile(title: Text(character[index].name)),
+          shrinkWrap: true,
+          itemCount: character.length,
+        ));
   }
 }

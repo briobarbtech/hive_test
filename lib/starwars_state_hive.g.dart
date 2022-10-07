@@ -1,38 +1,40 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'person.dart';
+part of 'starwars_state_hive.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class PersonAdapter extends TypeAdapter<Person> {
+class StarWarsStateHiveAdapter extends TypeAdapter<StarWarsStateHive> {
   @override
   final int typeId = 1;
 
   @override
-  Person read(BinaryReader reader) {
+  StarWarsStateHive read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Person(
-      name: fields[0] as String,
-      age: fields[1] as int,
-      friends: (fields[2] as List).cast<Person>(),
+    return StarWarsStateHive(
+      listCharacter: (fields[0] as List)
+          .map((dynamic e) => (e as Map).cast<String, dynamic>())
+          .toList(),
+      previous: fields[1] as String,
+      next: fields[2] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Person obj) {
+  void write(BinaryWriter writer, StarWarsStateHive obj) {
     writer
       ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.name)
+      ..write(obj.listCharacter)
       ..writeByte(1)
-      ..write(obj.age)
+      ..write(obj.previous)
       ..writeByte(2)
-      ..write(obj.friends);
+      ..write(obj.next);
   }
 
   @override
@@ -41,7 +43,7 @@ class PersonAdapter extends TypeAdapter<Person> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PersonAdapter &&
+      other is StarWarsStateHiveAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
